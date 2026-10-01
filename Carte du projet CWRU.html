@@ -1,0 +1,392 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Carte du projet CWRU</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Condensed:wght@500;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: une colonne de fiches de révision ; chaque fiche = un schéma + 2-3 phrases à retenir */
+:root {
+  --bg: #f3f5f7;
+  --surface: #ffffff;
+  --fg: #16202b;
+  --muted: #5a6776;
+  --line: #c9d2dc;
+  --c1: #1f5fa8;   /* approche 1 : descripteurs + ML, et "train" */
+  --c2: #0f7f74;   /* approche 2 : deep learning */
+  --c3: #a8620e;   /* approche 3 : autoencodeur, et "test" */
+  --bad: #b3332b;
+  --ok: #1d7a4a;
+  --tint1: #e3ecf7; --tint2: #dff1ee; --tint3: #f6ead9;
+  --f-display: "IBM Plex Sans Condensed", "Arial Narrow", system-ui, sans-serif;
+  --f-body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #11161c; --surface: #19212a; --fg: #e4e9ef; --muted: #98a4b2; --line: #34414e;
+    --c1: #7eb0ea; --c2: #5cc9bb; --c3: #e3a75a; --bad: #f0877e; --ok: #5fc98f;
+    --tint1: #1d2d40; --tint2: #173431; --tint3: #3a2d1b; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #11161c; --surface: #19212a; --fg: #e4e9ef; --muted: #98a4b2; --line: #34414e;
+  --c1: #7eb0ea; --c2: #5cc9bb; --c3: #e3a75a; --bad: #f0877e; --ok: #5fc98f;
+  --tint1: #1d2d40; --tint2: #173431; --tint3: #3a2d1b; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); font-family: var(--f-body); font-size: 16px; line-height: 1.55; padding: 0 16px; }
+.wrap { max-width: 1040px; margin: 0 auto; padding-block: 32px 64px; display: flex; flex-direction: column; gap: 32px; }
+header { display: flex; flex-direction: column; gap: 8px; }
+.eyebrow { font-family: var(--f-mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+h1 { font-family: var(--f-display); font-weight: 700; font-size: clamp(28px, 6vw, 42px); line-height: 1.1; margin: 0; text-wrap: balance; }
+h2 { font-family: var(--f-display); font-weight: 700; font-size: 22px; margin: 0; text-wrap: balance; }
+.lead { color: var(--muted); margin: 0; max-width: 65ch; }
+section { display: flex; flex-direction: column; gap: 14px; }
+.sec-head { display: flex; gap: 12px; align-items: baseline; }
+.tag { font-family: var(--f-mono); font-size: 13px; color: var(--muted); flex: none; }
+figure { margin: 0; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.scroll { overflow-x: auto; }
+svg { display: block; width: 100%; height: auto; color: var(--fg); font-family: var(--f-body); }
+.scroll svg { min-width: 760px; }
+figcaption { font-size: 15px; color: var(--muted); max-width: 72ch; }
+.remember { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 6px; max-width: 75ch; }
+.remember li { padding-left: 18px; position: relative; }
+.remember li::before { content: ""; position: absolute; left: 2px; top: .62em; width: 7px; height: 7px; border-radius: 50%; background: var(--c1); }
+code { font-family: var(--f-mono); font-size: .9em; background: var(--tint1); padding: 0 4px; border-radius: 3px; }
+
+/* SVG */
+.node { fill: var(--surface); stroke: currentColor; stroke-width: 1.3; }
+.n1 { fill: var(--tint1); stroke: var(--c1); } .n2 { fill: var(--tint2); stroke: var(--c2); } .n3 { fill: var(--tint3); stroke: var(--c3); }
+.t { fill: currentColor; font-size: 14px; font-weight: 600; text-anchor: middle; }
+.tl { font-size: 14px; font-weight: 600; text-anchor: start; }
+.s { fill: var(--muted); font-size: 12px; text-anchor: middle; font-family: var(--f-mono); }
+.lbl { fill: var(--muted); font-size: 12px; font-style: italic; }
+.edge { stroke: currentColor; stroke-width: 1.3; fill: none; }
+.e1 { stroke: var(--c1); } .e2 { stroke: var(--c2); } .e3 { stroke: var(--c3); }
+.l1 { fill: var(--c1); } .l2 { fill: var(--c2); } .l3 { fill: var(--c3); }
+.train { fill: var(--c1); fill-opacity: .55; stroke: var(--c1); }
+.test { fill: var(--c3); fill-opacity: .55; stroke: var(--c3); }
+.bar { fill: none; stroke: currentColor; stroke-width: 1.2; }
+.cut { stroke: var(--bad); stroke-width: 2; stroke-dasharray: 4 3; }
+.cutok { stroke: var(--ok); stroke-width: 2; stroke-dasharray: 4 3; }
+.bad-t { fill: var(--bad); font-size: 13px; font-weight: 600; }
+.ok-t { fill: var(--ok); font-size: 13px; font-weight: 600; }
+.tile { fill: var(--tint1); stroke: var(--c1); stroke-width: 1; }
+.axis { stroke: currentColor; stroke-width: 1.2; fill: none; }
+.ax-t { fill: var(--muted); font-size: 12px; }
+
+.grid3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+@media (max-width: 720px) { .grid3, .grid2 { grid-template-columns: 1fr; } }
+.cell h3 { font-family: var(--f-display); font-size: 17px; margin: 0; }
+.cell p { margin: 0; font-size: 14px; color: var(--muted); }
+
+.nums { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+@media (max-width: 720px) { .nums { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.num { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; display: flex; flex-direction: column; gap: 2px; }
+.num b { font-family: var(--f-mono); font-size: 22px; font-weight: 500; font-variant-numeric: tabular-nums; }
+.num span { font-size: 13px; color: var(--muted); }
+
+.tbl { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 15px; background: var(--surface); }
+th, td { border: 1px solid var(--line); padding: 8px 10px; text-align: left; vertical-align: top; }
+th { font-family: var(--f-display); font-weight: 500; background: var(--bg); }
+.cm td { text-align: center; font-family: var(--f-mono); }
+.vp { background: var(--tint2); } .fn { background: var(--tint3); }
+.trap { border-left: 3px solid var(--bad); padding: 6px 0 6px 12px; display: flex; flex-direction: column; gap: 2px; }
+.trap b { color: var(--bad); }
+</style>
+
+<div class="wrap">
+  <header>
+    <span class="eyebrow">Fiche de révision · Projet CWRU → arcs électriques</span>
+    <h1>Carte du projet CWRU</h1>
+    <p class="lead">Tout le projet en 6 schémas. Lis d'abord le pipeline (le chemin complet), puis chaque bloc. Essaie de redessiner le schéma 1 de mémoire sur une feuille : si tu y arrives, tu sais expliquer ton projet en entretien.</p>
+  </header>
+
+  <!-- 1. PIPELINE -->
+  <section>
+    <div class="sec-head"><span class="tag">1</span><h2>Le pipeline complet : 3 approches, une même évaluation</h2></div>
+    <figure>
+      <div class="scroll">
+      <svg viewBox="0 0 1100 420" role="img" aria-label="Pipeline : signal brut, séparation temporelle, fenêtrage, puis trois approches (descripteurs et ML, deep learning, autoencodeur) qui convergent vers l'évaluation.">
+        <defs>
+          <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="context-stroke"/></marker>
+        </defs>
+        <!-- tronc commun -->
+        <rect class="node" x="10" y="175" width="140" height="70" rx="8"/>
+        <text class="t" x="80" y="205">Signal brut</text><text class="s" x="80" y="225">12 kHz · 4 classes</text>
+        <line class="edge" x1="150" y1="210" x2="184" y2="210" marker-end="url(#ar)"/>
+        <rect class="node" x="186" y="175" width="150" height="70" rx="8"/>
+        <text class="t" x="261" y="205">Split temporel</text><text class="s" x="261" y="225">70 % / 30 %</text>
+        <line class="edge" x1="336" y1="210" x2="370" y2="210" marker-end="url(#ar)"/>
+        <rect class="node" x="372" y="175" width="140" height="70" rx="8"/>
+        <text class="t" x="442" y="205">Fenêtrage</text><text class="s" x="442" y="225">1024 pts ≈ 85 ms</text>
+
+        <!-- embranchement -->
+        <path class="edge e1" d="M512 210 H535 V65 H578" marker-end="url(#ar)"/>
+        <path class="edge e2" d="M512 210 H578" marker-end="url(#ar)"/>
+        <path class="edge e3" d="M512 210 H535 V355 H578" marker-end="url(#ar)"/>
+        
+        
+        
+
+        <!-- approche 1 -->
+        <rect class="node n1" x="580" y="30" width="190" height="70" rx="8"/>
+        <text class="t" x="675" y="58">Descripteurs (23)</text><text class="s" x="675" y="78">temps · FFT · ondelettes</text>
+        <line class="edge e1" x1="770" y1="65" x2="808" y2="65" marker-end="url(#ar)"/>
+        <rect class="node n1" x="810" y="30" width="130" height="70" rx="8"/>
+        <text class="t" x="875" y="58">RF / SVM</text><text class="s" x="875" y="78">ML classique</text>
+
+        <!-- approche 2 -->
+        <rect class="node n2" x="580" y="175" width="190" height="70" rx="8"/>
+        <text class="t" x="675" y="203">Standardisation</text><text class="s" x="675" y="223">μ, σ du train seul</text>
+        <line class="edge e2" x1="770" y1="210" x2="808" y2="210" marker-end="url(#ar)"/>
+        <rect class="node n2" x="810" y="175" width="130" height="70" rx="8"/>
+        <text class="t" x="875" y="203">1D-CNN</text><text class="s" x="875" y="223">CNN-LSTM</text>
+
+        <!-- approche 3 -->
+        <rect class="node n3" x="580" y="320" width="190" height="70" rx="8"/>
+        <text class="t" x="675" y="348">Normal seulement</text><text class="s" x="675" y="368">aucun défaut vu</text>
+        <line class="edge e3" x1="770" y1="355" x2="808" y2="355" marker-end="url(#ar)"/>
+        <rect class="node n3" x="810" y="320" width="130" height="70" rx="8"/>
+        <text class="t" x="875" y="348">Autoencodeur</text><text class="s" x="875" y="368">erreur &gt; seuil</text>
+
+        <!-- convergence -->
+        <path class="edge e1" d="M940 65 H965 V190 H978" marker-end="url(#ar)"/>
+        <path class="edge e2" d="M940 210 H978" marker-end="url(#ar)"/>
+        <path class="edge e3" d="M940 355 H965 V230 H978" marker-end="url(#ar)"/>
+        <rect class="node" x="980" y="160" width="112" height="100" rx="8"/>
+        <text class="t" x="1036" y="190">Évaluation</text>
+        <text class="s" x="1036" y="212">F1 macro</text><text class="s" x="1036" y="228">matrice · ROC</text><text class="s" x="1036" y="244">bruit (SNR)</text>
+      </svg>
+      </div>
+      <figcaption>Le tronc commun prépare les données une seule fois. Les trois approches diffèrent par <b>qui choisit les descripteurs</b> : toi (approche 1), le réseau (approche 2), ou personne, car l'autoencodeur apprend juste le « normal » (approche 3).</figcaption>
+    </figure>
+    <div class="grid3">
+      <figure class="cell"><h3 style="color:var(--c1)">Approche 1 · ML</h3><p>Tu calcules des nombres qui ont un sens physique (kurtosis, énergie par bande…). Interprétable, marche avec peu de données.</p></figure>
+      <figure class="cell"><h3 style="color:var(--c2)">Approche 2 · Deep</h3><p>Le réseau lit le signal brut et apprend ses propres filtres. Pas d'expertise manuelle, mais plus de données et moins interprétable.</p></figure>
+      <figure class="cell"><h3 style="color:var(--c3)">Approche 3 · Anomalies</h3><p>Entraîné uniquement sur le normal. Détecte un défaut jamais vu, car il le reconstruit mal. Idéal quand les défauts sont rares.</p></figure>
+    </div>
+  </section>
+
+  <!-- 2. FUITE -->
+  <section>
+    <div class="sec-head"><span class="tag">2</span><h2>Le piège n°1 : la fuite de données</h2></div>
+    <div class="grid2">
+      <figure>
+        <svg viewBox="0 0 480 170" role="img" aria-label="Mauvaise méthode : fenêtres chevauchantes mélangées, train et test voisins partagent la moitié de leurs points.">
+          <text class="bad-t" x="10" y="20">✗ Fenêtrer, mélanger, puis couper</text>
+          <rect class="bar" x="10" y="120" width="460" height="14" rx="3"/>
+          <text class="ax-t" x="10" y="155">signal (temps →)</text>
+          <!-- fenêtres chevauchantes, alternées train/test au hasard -->
+          <rect class="train" x="10"  y="45" width="80" height="24" rx="3"/>
+          <rect class="test"  x="50"  y="78" width="80" height="24" rx="3"/>
+          <rect class="train" x="90"  y="45" width="80" height="24" rx="3"/>
+          <rect class="train" x="130" y="78" width="80" height="24" rx="3"/>
+          <rect class="test"  x="170" y="45" width="80" height="24" rx="3"/>
+          <rect class="train" x="210" y="78" width="80" height="24" rx="3"/>
+          <rect class="test"  x="250" y="45" width="80" height="24" rx="3"/>
+          <rect class="train" x="290" y="78" width="80" height="24" rx="3"/>
+          <rect class="train" x="330" y="45" width="80" height="24" rx="3"/>
+          <rect class="test"  x="370" y="78" width="80" height="24" rx="3"/>
+          <line class="cut" x1="90" y1="38" x2="90" y2="110"/>
+          <line class="cut" x1="130" y1="38" x2="130" y2="110"/>
+          <text class="bad-t" x="140" y="35" font-size="12">50 % en commun</text>
+        </svg>
+        <figcaption>Une fenêtre de test partage la moitié de ses points avec une fenêtre du train. Le modèle a déjà vu la réponse : 100 % trompeur.</figcaption>
+      </figure>
+      <figure>
+        <svg viewBox="0 0 480 170" role="img" aria-label="Bonne méthode : couper le signal à 70 % dans le temps, puis fenêtrer : train avec chevauchement à gauche, test sans chevauchement à droite.">
+          <text class="ok-t" x="10" y="20">✓ Couper dans le temps, puis fenêtrer</text>
+          <rect class="bar" x="10" y="120" width="460" height="14" rx="3"/>
+          <text class="ax-t" x="10" y="155">0 %</text><text class="ax-t" x="332" y="155" text-anchor="middle">70 %</text><text class="ax-t" x="470" y="155" text-anchor="end">100 %</text>
+          <rect class="train" x="10"  y="45" width="64" height="24" rx="3"/>
+          <rect class="train" x="42"  y="78" width="64" height="24" rx="3"/>
+          <rect class="train" x="74"  y="45" width="64" height="24" rx="3"/>
+          <rect class="train" x="106" y="78" width="64" height="24" rx="3"/>
+          <rect class="train" x="138" y="45" width="64" height="24" rx="3"/>
+          <rect class="train" x="170" y="78" width="64" height="24" rx="3"/>
+          <rect class="train" x="202" y="45" width="64" height="24" rx="3"/>
+          <rect class="train" x="234" y="78" width="64" height="24" rx="3"/>
+          <rect class="train" x="266" y="45" width="64" height="24" rx="3"/>
+          <line class="cutok" x1="332" y1="35" x2="332" y2="138"/>
+          <rect class="test" x="338" y="60" width="64" height="24" rx="3"/>
+          <rect class="test" x="404" y="60" width="64" height="24" rx="3"/>
+          <text class="ax-t" x="170" y="35" text-anchor="middle">train : chevauchement 50 %</text>
+          <text class="ax-t" x="403" y="50" text-anchor="middle">test : sans</text>
+        </svg>
+        <figcaption>Aucun point du test n'a été vu à l'entraînement. Ensuite seulement, on mélange le train, sinon <code>validation_split</code> ne prend qu'une seule classe.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- 3. TEMPS-FREQUENCE -->
+  <section>
+    <div class="sec-head"><span class="tag">3</span><h2>FFT, spectrogramme, ondelettes : comment chacun découpe le plan temps-fréquence</h2></div>
+    <div class="grid3">
+      <figure>
+        <svg viewBox="0 0 220 200" role="img" aria-label="FFT : bandes horizontales sur toute la durée, aucune information de temps.">
+          <path class="axis" d="M30 10 V170 H210"/>
+          <text class="ax-t" x="120" y="192" text-anchor="middle">temps</text>
+          <text class="ax-t" x="14" y="90" text-anchor="middle" transform="rotate(-90 14 90)">fréquence</text>
+          <rect class="tile" x="32" y="12"  width="176" height="30"/>
+          <rect class="tile" x="32" y="44"  width="176" height="30"/>
+          <rect class="tile" x="32" y="76"  width="176" height="30"/>
+          <rect class="tile" x="32" y="108" width="176" height="30"/>
+          <rect class="tile" x="32" y="140" width="176" height="28"/>
+        </svg>
+        <figcaption><b>FFT</b> : quelles fréquences, mais pas quand. Chaque bande couvre toute la fenêtre. Résolution Δf = fs/N.</figcaption>
+      </figure>
+      <figure>
+        <svg viewBox="0 0 220 200" role="img" aria-label="Spectrogramme : grille de cases toutes identiques, compromis fixe.">
+          <path class="axis" d="M30 10 V170 H210"/>
+          <text class="ax-t" x="120" y="192" text-anchor="middle">temps</text>
+          <text class="ax-t" x="14" y="90" text-anchor="middle" transform="rotate(-90 14 90)">fréquence</text>
+          <g>
+            <rect class="tile" x="32"  y="12" width="42" height="38"/><rect class="tile" x="76"  y="12" width="42" height="38"/><rect class="tile" x="120" y="12" width="42" height="38"/><rect class="tile" x="164" y="12" width="44" height="38"/>
+            <rect class="tile" x="32"  y="52" width="42" height="38"/><rect class="tile" x="76"  y="52" width="42" height="38"/><rect class="tile" x="120" y="52" width="42" height="38"/><rect class="tile" x="164" y="52" width="44" height="38"/>
+            <rect class="tile" x="32"  y="92" width="42" height="38"/><rect class="tile" x="76"  y="92" width="42" height="38"/><rect class="tile" x="120" y="92" width="42" height="38"/><rect class="tile" x="164" y="92" width="44" height="38"/>
+            <rect class="tile" x="32"  y="132" width="42" height="36"/><rect class="tile" x="76" y="132" width="42" height="36"/><rect class="tile" x="120" y="132" width="42" height="36"/><rect class="tile" x="164" y="132" width="44" height="36"/>
+          </g>
+        </svg>
+        <figcaption><b>STFT</b> : FFT sur fenêtres glissantes. Toutes les cases ont la même forme : un seul compromis temps/fréquence pour tout le signal.</figcaption>
+      </figure>
+      <figure>
+        <svg viewBox="0 0 220 200" role="img" aria-label="Ondelettes : cases étroites en temps pour les hautes fréquences, larges pour les basses.">
+          <path class="axis" d="M30 10 V170 H210"/>
+          <text class="ax-t" x="120" y="192" text-anchor="middle">temps</text>
+          <text class="ax-t" x="14" y="90" text-anchor="middle" transform="rotate(-90 14 90)">fréquence</text>
+          <!-- hautes fréquences : 8 cases étroites, hautes -->
+          <rect class="tile" x="32"  y="12" width="20" height="60"/><rect class="tile" x="54"  y="12" width="20" height="60"/><rect class="tile" x="76"  y="12" width="20" height="60"/><rect class="tile" x="98" y="12" width="20" height="60"/>
+          <rect class="tile" x="120" y="12" width="20" height="60"/><rect class="tile" x="142" y="12" width="20" height="60"/><rect class="tile" x="164" y="12" width="20" height="60"/><rect class="tile" x="186" y="12" width="22" height="60"/>
+          <!-- moyennes : 4 cases -->
+          <rect class="tile" x="32" y="74" width="42" height="40"/><rect class="tile" x="76" y="74" width="42" height="40"/><rect class="tile" x="120" y="74" width="42" height="40"/><rect class="tile" x="164" y="74" width="44" height="40"/>
+          <!-- basses : 2 cases larges -->
+          <rect class="tile" x="32" y="116" width="86" height="26"/><rect class="tile" x="120" y="116" width="88" height="26"/>
+          <rect class="tile" x="32" y="144" width="176" height="24"/>
+        </svg>
+        <figcaption><b>Ondelettes</b> : en haute fréquence, des cases étroites qui localisent un choc bref ; en basse fréquence, des cases larges qui donnent une fréquence précise. Idéal pour les arcs.</figcaption>
+      </figure>
+    </div>
+    <ul class="remember">
+      <li>Toutes les cases ont la même <b>surface</b> : on ne peut pas être précis en temps et en fréquence à la fois (principe d'incertitude).</li>
+      <li>Fenêtre de <b>Hann</b> avant la FFT pour limiter la fuite spectrale. Rien n'existe au-dessus de <b>fs/2 = 6 kHz</b> (Nyquist).</li>
+      <li>Sur le scalogramme d'un défaut : des <b>traits verticaux réguliers</b>, un par choc. Leur espacement dépend du type de défaut.</li>
+    </ul>
+  </section>
+
+  <!-- 4. RESEAUX -->
+  <section>
+    <div class="sec-head"><span class="tag">4</span><h2>Ce que fait chaque réseau, en forme</h2></div>
+    <figure>
+      <div class="scroll">
+      <svg viewBox="0 0 1000 330" role="img" aria-label="Formes des données dans le CNN, le CNN-LSTM et l'autoencodeur : la longueur de la séquence diminue, l'autoencodeur la reconstruit.">
+        <defs><marker id="ar2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="context-stroke"/></marker></defs>
+        <!-- CNN -->
+        <text class="tl l2" x="10" y="30">1D-CNN</text>
+        <rect class="node n2" x="120" y="12" width="150" height="30" rx="4"/><text class="s" x="195" y="32">signal 1024 × 1</text>
+        <line class="edge e2" x1="270" y1="27" x2="306" y2="27" marker-end="url(#ar2)"/><text class="lbl" x="275" y="58">conv 64, pas 8</text>
+        <rect class="node n2" x="308" y="12" width="110" height="30" rx="4"/><text class="s" x="363" y="32">128 × 16</text>
+        <line class="edge e2" x1="418" y1="27" x2="454" y2="27" marker-end="url(#ar2)"/><text class="lbl" x="420" y="58">conv + pool</text>
+        <rect class="node n2" x="456" y="12" width="80" height="30" rx="4"/><text class="s" x="496" y="32">16 × 64</text>
+        <line class="edge e2" x1="536" y1="27" x2="572" y2="27" marker-end="url(#ar2)"/><text class="lbl" x="540" y="58">moyenne</text>
+        <rect class="node n2" x="574" y="12" width="70" height="30" rx="4"/><text class="s" x="609" y="32">64</text>
+        <line class="edge e2" x1="644" y1="27" x2="680" y2="27" marker-end="url(#ar2)"/><text class="lbl" x="648" y="58">softmax</text>
+        <rect class="node n2" x="682" y="12" width="150" height="30" rx="4"/><text class="s" x="757" y="32">4 probabilités</text>
+
+        <!-- CNN-LSTM -->
+        <text class="tl l2" x="10" y="130">CNN-LSTM</text>
+        <rect class="node n2" x="120" y="112" width="150" height="30" rx="4"/><text class="s" x="195" y="132">signal 1024 × 1</text>
+        <line class="edge e2" x1="270" y1="127" x2="306" y2="127" marker-end="url(#ar2)"/><text class="lbl" x="275" y="158">2 × conv + pool</text>
+        <rect class="node n2" x="308" y="112" width="190" height="30" rx="4"/><text class="s" x="403" y="132">32 pas × 32 motifs</text>
+        <line class="edge e2" x1="498" y1="127" x2="534" y2="127" marker-end="url(#ar2)"/><text class="lbl" x="500" y="158">LSTM lit les 32 pas</text>
+        <rect class="node n2" x="536" y="112" width="110" height="30" rx="4"/><text class="s" x="591" y="132">mémoire 64</text>
+        <line class="edge e2" x1="646" y1="127" x2="680" y2="127" marker-end="url(#ar2)"/><text class="lbl" x="648" y="158">softmax</text>
+        <rect class="node n2" x="682" y="112" width="150" height="30" rx="4"/><text class="s" x="757" y="132">4 probabilités</text>
+
+        <!-- AE : sablier -->
+        <text class="tl l3" x="10" y="250">Autoencodeur</text>
+        <rect class="node n3" x="120" y="200" width="44" height="100" rx="4"/><text class="s" x="142" y="320">1024</text>
+        <rect class="node n3" x="196" y="215" width="44" height="70" rx="4"/><text class="s" x="218" y="320">512</text>
+        <rect class="node n3" x="272" y="228" width="44" height="44" rx="4"/><text class="s" x="294" y="320">256</text>
+        <rect class="node n3" x="348" y="238" width="44" height="24" rx="4"/><text class="s" x="370" y="320">128 × 8</text>
+        <rect class="node n3" x="424" y="228" width="44" height="44" rx="4"/>
+        <rect class="node n3" x="500" y="215" width="44" height="70" rx="4"/>
+        <rect class="node n3" x="576" y="200" width="44" height="100" rx="4"/><text class="s" x="598" y="320">1024</text>
+        <line class="edge e3" x1="164" y1="250" x2="194" y2="250" marker-end="url(#ar2)"/>
+        <line class="edge e3" x1="240" y1="250" x2="270" y2="250" marker-end="url(#ar2)"/>
+        <line class="edge e3" x1="316" y1="250" x2="346" y2="250" marker-end="url(#ar2)"/>
+        <line class="edge e3" x1="392" y1="250" x2="422" y2="250" marker-end="url(#ar2)"/>
+        <line class="edge e3" x1="468" y1="250" x2="498" y2="250" marker-end="url(#ar2)"/>
+        <line class="edge e3" x1="544" y1="250" x2="574" y2="250" marker-end="url(#ar2)"/>
+        <text class="lbl" x="218" y="195" text-anchor="middle">encodeur</text>
+        <text class="lbl" x="370" y="225" text-anchor="middle">code</text>
+        <text class="lbl" x="522" y="195" text-anchor="middle">décodeur</text>
+        <line class="edge e3" x1="620" y1="250" x2="680" y2="250" marker-end="url(#ar2)"/><text class="lbl" x="625" y="240">compare</text>
+        <rect class="node n3" x="682" y="225" width="210" height="50" rx="4"/>
+        <text class="s" x="787" y="246">erreur = moy (x − x̂)²</text><text class="s" x="787" y="264">&gt; seuil p99 ⇒ défaut</text>
+      </svg>
+      </div>
+      <figcaption>Une convolution 1D est un <b>filtre FIR appris</b>. Le CNN raccourcit la séquence pour que le LSTM n'ait que 32 pas à lire. L'autoencodeur compresse puis reconstruit : il reconstruit bien le normal, mal un défaut.</figcaption>
+    </figure>
+  </section>
+
+  <!-- 5. METRIQUES -->
+  <section>
+    <div class="sec-head"><span class="tag">5</span><h2>Lire une matrice de confusion (cas des arcs)</h2></div>
+    <div class="grid2">
+      <div class="tbl">
+        <table class="cm">
+          <tr><th></th><th>Prédit : Arc</th><th>Prédit : Pas d'arc</th></tr>
+          <tr><th>Vrai : Arc</th><td class="vp">VP<br><small>arc détecté</small></td><td class="fn"><b>FN</b><br><small>arc raté → incendie</small></td></tr>
+          <tr><th>Vrai : Pas d'arc</th><td>FP<br><small>fausse alarme</small></td><td class="vp">VN<br><small>OK</small></td></tr>
+        </table>
+      </div>
+      <ul class="remember">
+        <li><b>Rappel</b> = VP / (VP + FN) : est-ce que je rate des arcs ? C'est la métrique critique en aéronautique.</li>
+        <li><b>Précision</b> = VP / (VP + FP) : quand je donne l'alarme, ai-je raison ?</li>
+        <li><b>F1</b> = moyenne harmonique des deux. <b>F1 macro</b> = chaque classe pèse pareil, donc non trompé par une classe majoritaire.</li>
+        <li><b>AUC ROC</b> : 1 = parfait, 0,5 = hasard. Indépendante du seuil.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 6. CHIFFRES + PIEGES -->
+  <section>
+    <div class="sec-head"><span class="tag">6</span><h2>Les chiffres à connaître par cœur</h2></div>
+    <div class="nums">
+      <div class="num"><b>12 kHz</b><span>fs : 12 000 mesures par seconde</span></div>
+      <div class="num"><b>6 kHz</b><span>Nyquist = fs / 2</span></div>
+      <div class="num"><b>1024 pts</b><span>une fenêtre ≈ 85 ms</span></div>
+      <div class="num"><b>11,7 Hz</b><span>Δf = fs / N = 12000 / 1024</span></div>
+      <div class="num"><b>≈ 3</b><span>kurtosis d'un signal gaussien ; ≫ 3 si chocs</span></div>
+      <div class="num"><b>p99</b><span>seuil de l'autoencodeur ≈ 1 % de fausses alarmes</span></div>
+      <div class="num"><b>0 dB</b><span>SNR : bruit aussi fort que le signal</span></div>
+      <div class="num"><b>5</b><span>sous-bandes DWT db4 niveau 4 (A4, D4…D1)</span></div>
+    </div>
+    <div class="grid3">
+      <div class="trap"><b>Piège · fuite de données</b><span>Couper train/test dans le temps <i>avant</i> de fenêtrer.</span></div>
+      <div class="trap"><b>Piège · validation d'une seule classe</b><span>Mélanger le train : <code>validation_split</code> prend la fin.</span></div>
+      <div class="trap"><b>Piège · BatchNorm</b><span>100 % train, 60 % test avec peu de batchs : <code>momentum=0.9</code>.</span></div>
+    </div>
+  </section>
+
+  <!-- 7. TRANSPOSITION -->
+  <section>
+    <div class="sec-head"><span class="tag">7</span><h2>Du projet au stage : ce qui change, ce qui reste</h2></div>
+    <div class="tbl">
+      <table>
+        <tr><th>Étape</th><th>Ton projet CWRU</th><th>Stage arcs électriques (IJL Nancy)</th></tr>
+        <tr><td>Signal</td><td>Vibration d'un roulement</td><td>Courant de ligne (230 VAC / 270 VDC)</td></tr>
+        <tr><td>Classes</td><td>Normal, Inner, Ball, Outer</td><td>Arc / Non-arc, sur charges résistives, inductives, non linéaires</td></tr>
+        <tr><td>Descripteurs</td><td>Kurtosis, énergie par bande, DWT</td><td>Même famille : temporels, fréquentiels, temps-fréquence</td></tr>
+        <tr><td>Modèles</td><td>RF, SVM, 1D-CNN, CNN-LSTM</td><td>CNN et LSTM déjà en place, à améliorer</td></tr>
+        <tr><td>Peu de défauts</td><td>Autoencodeur sur le normal</td><td>GAN / autoencodeurs pour <b>générer</b> des arcs synthétiques</td></tr>
+        <tr><td>Limites</td><td>Robustesse au bruit (SNR)</td><td>Changement de domaine, pertinence des métriques</td></tr>
+      </table>
+    </div>
+  </section>
+</div>
+
+</body></html>

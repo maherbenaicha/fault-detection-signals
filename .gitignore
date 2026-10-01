@@ -1,0 +1,8 @@
+# Données (téléchargées par le notebook, trop lourdes pour GitHub)
+data/*.mat
+# Python / Jupyter
+__pycache__/
+.ipynb_checkpoints/
+*.pyc
+.venv/
+.DS_Store

@@ -1,0 +1,345 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>QCM Détection de défauts</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Condensed:wght@500;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: colonne de lecture unique, barre de score collante, cartes-questions par chapitre */
+:root {
+  --bg: #f3f5f7;
+  --surface: #ffffff;
+  --fg: #16202b;
+  --muted: #5a6776;
+  --line: #d8dee5;
+  --accent: #1f5fa8;
+  --accent-soft: #e3ecf7;
+  --ok: #1d7a4a;
+  --ok-soft: #e2f3e9;
+  --bad: #b3332b;
+  --bad-soft: #f9e5e3;
+  --f-display: "IBM Plex Sans Condensed", "Arial Narrow", system-ui, sans-serif;
+  --f-body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #11161c; --surface: #19212a; --fg: #e4e9ef; --muted: #98a4b2; --line: #2c3743;
+    --accent: #7eb0ea; --accent-soft: #1d2d40; --ok: #5fc98f; --ok-soft: #173024;
+    --bad: #f0877e; --bad-soft: #3a1f1d; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #11161c; --surface: #19212a; --fg: #e4e9ef; --muted: #98a4b2; --line: #2c3743;
+  --accent: #7eb0ea; --accent-soft: #1d2d40; --ok: #5fc98f; --ok-soft: #173024;
+  --bad: #f0877e; --bad-soft: #3a1f1d; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); font-family: var(--f-body); font-size: 16px; line-height: 1.55; padding: 0 16px; }
+.wrap { max-width: 760px; margin: 0 auto; padding-block: 32px 64px; display: flex; flex-direction: column; gap: 28px; }
+
+header { display: flex; flex-direction: column; gap: 10px; }
+.eyebrow { font-family: var(--f-mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+h1 { font-family: var(--f-display); font-weight: 700; font-size: clamp(28px, 6vw, 40px); line-height: 1.1; margin: 0; text-wrap: balance; }
+.lead { color: var(--muted); margin: 0; max-width: 62ch; }
+.wave { width: 100%; height: 46px; display: block; }
+.wave path { fill: none; stroke: var(--accent); stroke-width: 1.4; }
+
+.bar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg); padding-block: 10px; border-bottom: 1px solid var(--line); display: flex; flex-direction: column; gap: 10px; }
+.stats { display: flex; flex-wrap: wrap; gap: 8px 20px; align-items: baseline; font-variant-numeric: tabular-nums; }
+.stat { font-family: var(--f-mono); font-size: 13px; color: var(--muted); }
+.stat b { font-size: 18px; color: var(--fg); font-weight: 500; }
+.stat.ok b { color: var(--ok); } .stat.bad b { color: var(--bad); }
+.progress { height: 4px; background: var(--line); border-radius: 2px; overflow: hidden; }
+.progress i { display: block; height: 100%; width: 0; background: var(--accent); transition: width .3s; }
+.filters { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { font: 500 13px var(--f-body); padding: 5px 11px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--fg); cursor: pointer; }
+.chip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--surface); }
+.chip:focus-visible, .opt:focus-visible, .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.chapter { font-family: var(--f-display); font-weight: 500; font-size: 20px; margin: 8px 0 -12px; color: var(--accent); }
+.q { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 18px; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.q-head { display: flex; gap: 12px; align-items: baseline; }
+.num { font-family: var(--f-mono); font-size: 13px; color: var(--muted); flex: none; font-variant-numeric: tabular-nums; }
+.q-text { font-weight: 600; margin: 0; min-width: 0; }
+.opts { display: flex; flex-direction: column; gap: 8px; }
+.opt { text-align: left; font: 400 15px/1.45 var(--f-body); color: var(--fg); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; cursor: pointer; display: flex; gap: 10px; }
+.opt:hover:not(:disabled) { border-color: var(--accent); }
+.opt .k { font-family: var(--f-mono); color: var(--muted); flex: none; }
+.opt:disabled { cursor: default; }
+.opt.correct { background: var(--ok-soft); border-color: var(--ok); }
+.opt.correct .k { color: var(--ok); }
+.opt.wrong { background: var(--bad-soft); border-color: var(--bad); }
+.opt.wrong .k { color: var(--bad); }
+.opt.dim { opacity: .55; }
+.expl { border-left: 3px solid var(--ok); padding: 4px 0 4px 12px; font-size: 15px; }
+.expl.is-bad { border-color: var(--bad); }
+.verdict { font-weight: 600; display: block; margin-bottom: 2px; }
+.expl.is-bad .verdict { color: var(--bad); } .expl:not(.is-bad) .verdict { color: var(--ok); }
+code, .m { font-family: var(--f-mono); font-size: .92em; background: var(--accent-soft); padding: 0 4px; border-radius: 3px; }
+
+.end { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 20px; display: flex; flex-direction: column; gap: 12px; }
+.end h2 { font-family: var(--f-display); font-size: 22px; margin: 0; }
+.end p { margin: 0; color: var(--muted); }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.btn { font: 500 14px var(--f-body); padding: 9px 16px; border-radius: 8px; border: 1px solid var(--accent); background: var(--accent); color: var(--surface); cursor: pointer; }
+.btn.ghost { background: transparent; color: var(--accent); }
+@media (prefers-reduced-motion: reduce) { .progress i { transition: none; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <span class="eyebrow">Projet CWRU · Révision</span>
+    <h1>QCM Détection de défauts</h1>
+    <p class="lead">38 questions sur ton projet : données, traitement du signal, descripteurs, deep learning, autoencodeur et évaluation. Clique sur une réponse : la correction et l'explication s'affichent tout de suite.</p>
+    <svg class="wave" viewBox="0 0 760 46" preserveAspectRatio="none" aria-hidden="true"><path id="wave"></path></svg>
+  </header>
+
+  <div class="bar" role="region" aria-label="Score">
+    <div class="stats">
+      <span class="stat">Répondu <b id="s-done">0</b>/<span id="s-total">0</span></span>
+      <span class="stat ok">Justes <b id="s-ok">0</b></span>
+      <span class="stat bad">Fausses <b id="s-bad">0</b></span>
+      <span class="stat">Score <b id="s-pct">–</b></span>
+    </div>
+    <div class="progress"><i id="prog"></i></div>
+    <div class="filters" id="filters"></div>
+  </div>
+
+  <main id="list" style="display:flex;flex-direction:column;gap:16px"></main>
+
+  <section class="end" id="end">
+    <h2 id="end-title">Ton bilan</h2>
+    <p id="end-text">Réponds aux questions pour voir ton bilan par chapitre.</p>
+    <div id="end-chapters" style="display:flex;flex-direction:column;gap:4px;font-family:var(--f-mono);font-size:14px;font-variant-numeric:tabular-nums"></div>
+    <div class="actions">
+      <button class="btn" id="retry-wrong" type="button">Refaire mes erreurs</button>
+      <button class="btn ghost" id="reset" type="button">Tout recommencer</button>
+    </div>
+  </section>
+</div>
+
+<script>
+const CH = ["Données et préparation", "Traitement du signal", "Descripteurs et ML classique", "Deep Learning", "Autoencodeur et évaluation"];
+// [chapitre, question, [options], index bonne réponse, explication]
+const Q = [
+[0,"Le signal est échantillonné à 12 kHz. Qu'est-ce que ça veut dire ?",
+ ["Le capteur mesure des vibrations jusqu'à 12 000 Hz","Le capteur donne 12 000 valeurs par seconde","Le signal dure 12 000 secondes","Le signal contient 12 000 points au total"],1,
+ "Échantillonner, c'est mesurer à intervalles réguliers. À <code>fs = 12 000 Hz</code>, on a une mesure toutes les 1/12000 s ≈ 83 µs. Ça ne veut pas dire qu'on voit les fréquences jusqu'à 12 kHz : voir la question suivante."],
+[0,"Avec fs = 12 kHz, quelle est la plus haute fréquence qu'on peut analyser correctement ?",
+ ["12 000 Hz","24 000 Hz","6 000 Hz","1 024 Hz"],2,
+ "C'est la <b>fréquence de Nyquist</b> = fs/2. Le théorème de Shannon dit qu'il faut au moins 2 points par période pour représenter une sinusoïde. Au-delà de 6 kHz, les fréquences se « replient » et apparaissent à de fausses positions : c'est le <b>repliement (aliasing)</b>."],
+[0,"Une fenêtre de 1024 points à 12 kHz dure environ :",
+ ["8,5 ms","85 ms","1 s","0,85 s"],1,
+ "Durée = nombre de points / fs = 1024 / 12000 ≈ 0,085 s = 85 ms. C'est assez long pour contenir plusieurs chocs (un défaut Inner tape environ 160 fois par seconde, soit un choc toutes les ~6 ms)."],
+[0,"Pourquoi découpe-t-on les longs signaux en fenêtres ?",
+ ["Pour réduire le bruit","Pour obtenir beaucoup d'exemples de même taille à donner au modèle","Parce que la FFT ne marche que sur 1024 points","Pour augmenter la fréquence d'échantillonnage"],1,
+ "On n'a que 4 enregistrements. Un modèle a besoin de centaines d'exemples d'<b>entrée de taille fixe</b>. Chaque fenêtre de 1024 points devient un exemple, avec l'étiquette de son fichier. La FFT, elle, marche sur n'importe quelle longueur."],
+[0,"Pourquoi sépare-t-on train/test dans le temps (70 % / 30 %) AVANT de découper en fenêtres ?",
+ ["Pour aller plus vite","Pour éviter la fuite de données : des fenêtres qui se chevauchent seraient presque identiques en train et en test","Parce que Keras l'exige","Pour équilibrer les classes"],1,
+ "Les fenêtres du train se chevauchent à 50 %. Si on mélange puis coupe au hasard, une fenêtre du test partage la moitié de ses points avec une fenêtre du train. Le modèle a déjà « vu » la réponse, et le score est artificiellement parfait. C'est la <b>fuite de données (data leakage)</b>, une erreur très fréquente dans les articles sur CWRU."],
+[0,"Pendant le test du notebook, la validation Keras ne contenait qu'une seule classe. Pourquoi ?",
+ ["Le dataset était corrompu","validation_split prend les DERNIERS 15 % sans mélanger, et les données étaient rangées par classe","Le modèle était trop petit","La BatchNormalization avait supprimé les autres classes"],1,
+ "<code>validation_split=0.15</code> ne mélange pas : il prend la fin du tableau. Nos exemples étaient rangés Normal → Inner → Ball → Outer, donc la validation ne contenait que « Outer ». La solution est de <b>mélanger le train</b> (après la séparation train/test, donc sans fuite)."],
+[0,"Pour standardiser les signaux (moyenne 0, écart-type 1), on calcule la moyenne et l'écart-type sur :",
+ ["Tout le dataset","Le test uniquement","Le train uniquement","Chaque classe séparément"],2,
+ "Le test doit simuler des données <b>jamais vues</b>. Si on utilise ses statistiques pour normaliser, une information du test « fuit » dans l'entraînement. On calcule donc <code>mu</code> et <code>sigma</code> sur le train, puis on les applique tels quels au test."],
+[0,"La classe Normal a environ 2 fois plus d'exemples que les autres. Comment s'appelle ce problème et comment l'a-t-on géré ?",
+ ["Sur-apprentissage, avec Dropout","Données déséquilibrées, avec des poids de classe et le F1 macro","Aliasing, avec un filtre","Fuite de données, avec un split temporel"],1,
+ "Ce sont des <b>données déséquilibrées (unbalanced data)</b>, citées dans l'offre de stage. <code>class_weight</code> donne plus de poids aux erreurs sur les classes rares pendant l'entraînement. Le <b>F1 macro</b> donne le même poids à chaque classe dans l'évaluation. Pour les arcs, le déséquilibre est souvent extrême : beaucoup de « pas d'arc », très peu d'arcs."],
+
+[1,"Que donne la FFT d'une fenêtre de signal ?",
+ ["L'évolution de l'amplitude dans le temps","L'amplitude de chaque fréquence présente dans le signal","Le signal débruité","La position des chocs dans le temps"],1,
+ "La transformée de Fourier décompose le signal en une somme de sinusoïdes et donne l'amplitude de chacune. Elle perd l'information de <b>temps</b> : on sait quelles fréquences sont présentes, pas à quel moment. C'est pour ça qu'on utilise ensuite le spectrogramme et les ondelettes."],
+[1,"Quelle est la résolution fréquentielle d'une FFT sur 1024 points à fs = 12 kHz ?",
+ ["1 Hz","11,7 Hz","117 Hz","6 000 Hz"],1,
+ "Résolution Δf = fs / N = 12000 / 1024 ≈ 11,7 Hz. Deux fréquences plus proches que ça ne peuvent pas être séparées. Pour une résolution plus fine, il faut une fenêtre plus <b>longue</b>, donc on perd en précision temporelle."],
+[1,"Pourquoi multiplie-t-on par une fenêtre de Hann avant la FFT ?",
+ ["Pour amplifier les hautes fréquences","Pour réduire la fuite spectrale causée par les bords coupés net de la fenêtre","Pour supprimer la composante continue","Pour doubler la résolution"],1,
+ "La FFT suppose que le morceau se répète à l'infini. Couper net crée une discontinuité aux bords, qui étale l'énergie sur des fréquences voisines : c'est la <b>fuite spectrale</b>. La fenêtre de Hann ramène doucement les bords à zéro pour limiter ce problème."],
+[1,"Qu'apporte le spectrogramme (STFT) par rapport à une FFT simple ?",
+ ["Il est plus rapide à calculer","Il montre comment le contenu fréquentiel évolue dans le temps","Il a une meilleure résolution fréquentielle","Il supprime le bruit"],1,
+ "La STFT (Short-Time Fourier Transform) calcule une FFT sur de petites fenêtres glissantes et les empile. On obtient une image temps × fréquence. Sur les défauts, on voit des <b>bandes verticales répétées</b> : ce sont les chocs périodiques."],
+[1,"Dans un spectrogramme, si on allonge la fenêtre d'analyse (nperseg plus grand) :",
+ ["On gagne en précision fréquentielle mais on perd en précision temporelle","On gagne sur les deux","On perd sur les deux","Rien ne change"],0,
+ "C'est le <b>principe d'incertitude temps-fréquence</b> : on ne peut pas être précis sur les deux à la fois. Fenêtre longue : bonne résolution en fréquence, mauvaise en temps. Fenêtre courte : l'inverse. La STFT impose un seul compromis pour toutes les fréquences."],
+[1,"Pourquoi les ondelettes sont-elles bien adaptées aux chocs brefs (et aux arcs électriques) ?",
+ ["Elles sont plus rapides que la FFT","Leur résolution s'adapte : précise en temps pour les hautes fréquences, précise en fréquence pour les basses","Elles suppriment automatiquement le bruit","Elles ne nécessitent pas d'échantillonnage"],1,
+ "L'ondelette est <b>comprimée</b> pour analyser les hautes fréquences (bonne localisation temporelle d'un choc) et <b>étirée</b> pour les basses fréquences. C'est idéal pour les <b>phénomènes transitoires</b>, comme un choc mécanique ou un arc électrique qui dure quelques microsecondes à millisecondes."],
+[1,"Sur le scalogramme d'un signal de défaut, on voit des traits verticaux régulièrement espacés. Ils représentent :",
+ ["Du bruit de mesure","Les chocs périodiques créés par le défaut","La fréquence de rotation du moteur","Un artefact de calcul"],1,
+ "Chaque trait = un <b>choc</b> qui excite brièvement une large bande de fréquences. Leur <b>espacement</b> dépend du type de défaut (bague intérieure, bille, bague extérieure), car chacun a sa fréquence caractéristique. C'est pourquoi le rythme des chocs permet de distinguer les défauts."],
+[1,"Une DWT avec l'ondelette db4 sur 4 niveaux (wavedec level=4) produit combien de sous-bandes ?",
+ ["4","5","8","16"],1,
+ "4 bandes de <b>détails</b> (D1 à D4, des plus hautes aux plus basses fréquences) + 1 bande d'<b>approximation</b> A4 (le reste en basses fréquences) = 5. Dans le projet, on calcule l'énergie relative de chaque sous-bande : 5 descripteurs."],
+
+[2,"Que vaut environ le kurtosis d'un signal gaussien, et comment varie-t-il avec des chocs ?",
+ ["0, et il diminue","3, et il augmente fortement","1, et il ne change pas","3, et il diminue"],1,
+ "Le kurtosis mesure le « caractère pointu » de la distribution. Pour une gaussienne, il vaut <b>3</b> (formule avec <code>fisher=False</code>). Les chocs créent des valeurs extrêmes rares, ce qui fait monter le kurtosis bien au-dessus de 3. C'est un indicateur classique de défaut impulsionnel."],
+[2,"Le facteur de crête (crest factor) se calcule comme :",
+ ["RMS / pic","pic / RMS","moyenne / écart-type","pic − RMS"],1,
+ "Crest = <code>max|x| / RMS</code>. Un signal sinusoïdal a un facteur de crête ≈ 1,41. Si des chocs isolés apparaissent, le pic augmente bien plus que l'énergie moyenne et le facteur de crête grimpe."],
+[2,"Pourquoi utilise-t-on un StandardScaler avant le SVM, mais pas avant le Random Forest ?",
+ ["Le Random Forest normalise tout seul","Le SVM repose sur des distances, donc sensibles à l'échelle ; les arbres font des seuils, donc insensibles à l'échelle","C'est une erreur, il en faut pour les deux","Le SVM ne marche qu'avec des valeurs négatives"],1,
+ "Si un descripteur varie entre 0 et 1000 et un autre entre 0 et 0,01, le premier écrase le second dans le calcul de distance du SVM. Un arbre pose des questions du type « kurtosis &gt; 5 ? » : multiplier le kurtosis par 100 déplacerait le seuil sans rien changer au résultat."],
+[2,"Comment fonctionne un Random Forest ?",
+ ["Un seul arbre très profond","Des centaines d'arbres entraînés sur des sous-échantillons différents, qui votent","Un réseau de neurones en forme d'arbre","Un algorithme qui cherche la marge maximale"],1,
+ "Chaque arbre est entraîné sur un tirage aléatoire des exemples et des descripteurs (<b>bagging</b>). Individuellement, les arbres sur-apprennent. En votant ensemble, leurs erreurs se compensent. La « marge maximale », c'est le SVM."],
+[2,"À quoi sert le graphique d'importance des descripteurs du Random Forest ?",
+ ["À accélérer l'entraînement","À comprendre quels descripteurs aident le plus à décider, et à en sélectionner un bon sous-ensemble","À corriger les erreurs du modèle","À choisir le nombre d'arbres"],1,
+ "C'est de l'<b>interprétabilité</b> : on vérifie que le modèle s'appuie sur des grandeurs qui ont un sens physique (kurtosis, énergie haute fréquence…). Dans l'offre de stage, cela correspond à « choix, test et optimisation d'un set de descripteurs performants »."],
+[2,"Quelle est la principale différence entre l'approche « descripteurs + Random Forest » et « 1D-CNN » ?",
+ ["Le CNN n'a pas besoin de données d'entraînement","Avec les descripteurs, l'humain choisit quoi mesurer ; le CNN apprend lui-même ses descripteurs à partir du signal brut","Le Random Forest est toujours meilleur","Le CNN ne fonctionne que sur des images"],1,
+ "C'est le cœur de l'« approche combinée Deep et Machine Learning » du sujet de stage. Les descripteurs demandent une expertise mais sont interprétables et marchent avec peu de données. Le deep learning évite l'ingénierie manuelle, mais demande plus de données et reste une boîte plus noire."],
+
+[3,"À quoi correspond une convolution 1D en traitement du signal ?",
+ ["Une FFT","Un filtre FIR dont les coefficients sont appris","Un sous-échantillonnage","Une transformée en ondelettes"],1,
+ "Un filtre glisse le long du signal et calcule un produit scalaire à chaque position : c'est exactement un <b>filtre à réponse impulsionnelle finie (FIR)</b>. La différence, c'est que le réseau <b>apprend</b> les coefficients pour détecter les motifs utiles, comme la forme d'un choc."],
+[3,"Pourquoi la première convolution a-t-elle un noyau large (64) et un pas (stride) de 8 ?",
+ ["Pour voir d'un coup une portion de signal assez longue et réduire rapidement la longueur de la séquence","Pour ajouter du bruit","Parce que 64 est obligatoire","Pour augmenter le nombre de points"],0,
+ "Un noyau de 64 points couvre ~5 ms de signal, assez pour capter une oscillation complète. Le pas de 8 divise la longueur par 8 (1024 → 128), ce qui allège les couches suivantes. C'est l'idée du modèle <b>WDCNN</b>, très utilisé sur CWRU."],
+[3,"Dans le modèle CNN-LSTM, pourquoi place-t-on des convolutions AVANT le LSTM ?",
+ ["Le LSTM ne prend pas de nombres en entrée","Pour extraire des motifs locaux et raccourcir la séquence (1024 → 32 pas), car un LSTM sur 1024 pas serait lent et difficile à entraîner","Pour supprimer la mémoire du LSTM","Ce n'est pas nécessaire, c'est décoratif"],1,
+ "Le LSTM traite la séquence <b>pas à pas</b> : 1024 pas, c'est lent, et les gradients s'atténuent sur de longues séquences. Les convolutions résument le signal en 32 « motifs ». Le LSTM analyse ensuite leur <b>enchaînement</b> (par exemple la répétition régulière des chocs)."],
+[3,"La courbe de loss du train continue de baisser, mais celle de validation remonte. C'est :",
+ ["Du sous-apprentissage","Du sur-apprentissage","Un apprentissage parfait","Une fuite de données"],1,
+ "Le modèle <b>apprend par cœur</b> le train au lieu de généraliser. Les remèdes : <b>EarlyStopping</b> (arrêter au bon moment), <b>Dropout</b>, plus de données, <b>augmentation de données</b> ou un modèle plus petit."],
+[3,"Dans les tests, le CNN avait 100 % en train mais ~60 % en test. La cause était la BatchNormalization. Pourquoi ?",
+ ["Elle supprime des neurones","Ses statistiques glissantes, utilisées en test, convergent trop lentement avec peu de batchs (momentum 0,99 par défaut)","Elle n'existe pas en Keras","Elle double la taille du réseau"],1,
+ "En entraînement, la BN normalise avec les statistiques du batch courant. En test, elle utilise une <b>moyenne glissante</b> mise à jour à chaque batch avec <code>momentum=0.99</code>. Avec seulement ~11 batchs par époque, cette moyenne reste loin des vraies valeurs. Passer à <code>momentum=0.9</code> la fait converger plus vite."],
+[3,"Que fait EarlyStopping(patience=6, restore_best_weights=True) ?",
+ ["Il arrête après 6 époques","Il arrête si la loss de validation ne s'améliore pas pendant 6 époques, puis restaure les meilleurs poids","Il réduit le taux d'apprentissage","Il supprime les 6 pires exemples"],1,
+ "Il surveille <code>val_loss</code>. Après 6 époques sans amélioration, il arrête l'entraînement et remet les poids de la <b>meilleure</b> époque. On évite le sur-apprentissage sans avoir à deviner le bon nombre d'époques."],
+[3,"À quoi sert la couche de sortie Dense(4, activation='softmax') ?",
+ ["À produire 4 probabilités (une par classe) qui somment à 1","À produire 4 signaux reconstruits","À choisir 4 descripteurs","À faire 4 époques"],0,
+ "Softmax transforme 4 scores quelconques en <b>probabilités</b> positives dont la somme vaut 1. La classe prédite est celle de plus forte probabilité (<code>argmax</code>). La loss <code>sparse_categorical_crossentropy</code> compare ces probabilités à l'étiquette entière (0 à 3)."],
+
+[4,"Sur quelles données l'autoencodeur est-il entraîné ?",
+ ["Toutes les classes","Uniquement les défauts","Uniquement les signaux normaux","Uniquement le test"],2,
+ "Il apprend à reproduire le <b>normal</b>. Face à un défaut (jamais vu), il reconstruit mal, et l'erreur de reconstruction élevée déclenche l'alarme. C'est de la <b>détection d'anomalies non supervisée</b> : utile quand on a très peu d'exemples de défauts, comme souvent pour les arcs électriques."],
+[4,"On fixe le seuil d'alarme au 99ᵉ percentile de l'erreur sur des données normales de validation. Conséquence ?",
+ ["0 % de fausses alarmes garanties","Environ 1 % des signaux normaux déclencheront une fausse alarme","99 % des défauts seront ratés","Le modèle devient supervisé"],1,
+ "Par définition, 1 % des erreurs normales dépassent le 99ᵉ percentile. Baisser le seuil détecte plus de défauts mais crée plus de fausses alarmes. C'est le <b>compromis détection / fausses alarmes</b>, que la courbe ROC représente."],
+[4,"Une AUC ROC de 0,5 signifie que le modèle :",
+ ["Est parfait","Fait aussi bien que le hasard","Se trompe toujours","A 50 % de précision sur chaque classe"],1,
+ "La courbe ROC trace le taux de détection en fonction du taux de fausses alarmes pour tous les seuils possibles. AUC = 1 : séparation parfaite. AUC = 0,5 : la diagonale, c'est-à-dire le hasard. L'AUC a l'avantage de <b>ne pas dépendre du seuil choisi</b>."],
+[4,"Le rappel (recall) de la classe « Défaut » est :",
+ ["Parmi les prédictions « Défaut », la part de vrais défauts","Parmi les vrais défauts, la part détectée par le modèle","Le pourcentage total de bonnes réponses","La moyenne des F1"],1,
+ "Rappel = VP / (VP + FN). Il répond à la question « est-ce que je rate des défauts ? ». La première réponse est la <b>précision</b> = VP / (VP + FP), qui répond à « quand je donne l'alarme, ai-je raison ? »."],
+[4,"Pour détecter des arcs électriques dans un avion, quelle erreur est la plus grave ?",
+ ["Un faux positif (fausse alarme)","Un faux négatif (arc non détecté)","Les deux sont équivalentes","Aucune, le modèle se corrige seul"],1,
+ "Un arc non détecté peut provoquer un <b>incendie</b>. On privilégie donc un <b>rappel très élevé</b>, tout en gardant les fausses alarmes acceptables (une coupure intempestive d'un circuit a aussi un coût). Ce choix de métrique est un point cité dans l'offre : « pertinence des métriques »."],
+[4,"Pourquoi utiliser le F1 macro plutôt que l'accuracy seule ?",
+ ["Il est plus simple à calculer","Il donne le même poids à chaque classe, donc il n'est pas trompé par une classe majoritaire","Il ignore les faux positifs","Il est toujours plus élevé"],1,
+ "Exemple : 95 % de « pas d'arc ». Un modèle qui répond toujours « pas d'arc » a 95 % d'accuracy mais ne détecte <b>aucun</b> arc. Son F1 pour la classe Arc vaut 0, donc le F1 macro chute. L'accuracy cache le problème, le F1 macro le révèle."],
+[4,"Que signifie un SNR de 0 dB ?",
+ ["Aucun bruit","La puissance du bruit est égale à celle du signal","Le bruit est 10 fois plus faible","Le signal est nul"],1,
+ "SNR<sub>dB</sub> = 10·log<sub>10</sub>(P<sub>signal</sub>/P<sub>bruit</sub>). À 0 dB, le rapport vaut 1. À 20 dB, le bruit est 100 fois plus faible, et à 10 dB, 10 fois. Le test de robustesse montre comment chaque modèle se dégrade quand le signal devient bruité."],
+[4,"Tu obtiens 100 % sur CWRU. Pourquoi ça ne prouve pas que le modèle marchera sur un vrai moteur ?",
+ ["Parce que 100 % est impossible","Parce que les données viennent d'un banc de labo (une vitesse, un défaut artificiel, peu de bruit), et test et train sont dans les mêmes conditions","Parce que Colab est moins précis","Parce que le test est trop grand"],1,
+ "Il faut tester la <b>généralisation</b> : autre charge moteur, autre capteur, plus de bruit. C'est le <b>changement de domaine (domain shift)</b> cité dans l'offre. Savoir expliquer cette limite montre en entretien que tu as un esprit de chercheur."],
+[4,"L'offre mentionne les GAN et les autoencodeurs pour « augmenter la base de données ». Quel est le but ?",
+ ["Compresser les fichiers","Générer des signaux synthétiques réalistes (par exemple des arcs) pour compenser le manque d'exemples","Remplacer le classifieur","Supprimer le bruit des mesures"],1,
+ "Enregistrer de vrais arcs électriques est coûteux et dangereux, donc les exemples d'arcs sont rares. Un <b>modèle génératif</b> (GAN, VAE) apprend la distribution des signaux et en produit de nouveaux, plausibles. On enrichit ainsi la classe minoritaire pour mieux entraîner le détecteur."]
+];
+
+const LET = "ABCD";
+let state = {};        // index -> choix
+let filter = -1;       // -1 = tous
+let only = null;       // ensemble d'indices à afficher (mode "refaire mes erreurs")
+const order = Q.map(q => { const idx = q[2].map((_, i) => i); for (let i = idx.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [idx[i], idx[j]] = [idx[j], idx[i]]; } return idx; });
+
+try { const s = JSON.parse(localStorage.getItem("qcm-cwru") || "null"); if (s && typeof s === "object") state = s; } catch (e) {}
+function persist() { try { localStorage.setItem("qcm-cwru", JSON.stringify(state)); } catch (e) {} }
+
+const list = document.getElementById("list");
+function visible() { return Q.map((q, i) => i).filter(i => (filter < 0 || Q[i][0] === filter) && (!only || only.has(i))); }
+
+function render() {
+  list.innerHTML = "";
+  let lastCh = -1;
+  visible().forEach(i => {
+    const [ch, text, opts, good, expl] = Q[i];
+    if (ch !== lastCh) { const h = document.createElement("h2"); h.className = "chapter"; h.textContent = CH[ch]; list.appendChild(h); lastCh = ch; }
+    const card = document.createElement("article"); card.className = "q"; card.id = "q" + i;
+    card.innerHTML = `<div class="q-head"><span class="num">Q${String(i + 1).padStart(2, "0")}</span><p class="q-text">${text}</p></div><div class="opts"></div>`;
+    const box = card.querySelector(".opts");
+    const chosen = state[i];
+    order[i].forEach((oi, pos) => {
+      const b = document.createElement("button"); b.type = "button"; b.className = "opt"; b.id = `q${i}o${oi}`;
+      b.innerHTML = `<span class="k">${LET[pos]}</span><span>${opts[oi]}</span>`;
+      if (chosen !== undefined) {
+        b.disabled = true;
+        if (oi === good) b.classList.add("correct");
+        else if (oi === chosen) b.classList.add("wrong");
+        else b.classList.add("dim");
+      } else b.addEventListener("click", () => { state[i] = oi; persist(); render(); stats(); document.getElementById("q" + i).scrollIntoView({ block: "nearest" }); });
+      box.appendChild(b);
+    });
+    if (chosen !== undefined) {
+      const ok = chosen === good;
+      const e = document.createElement("div"); e.className = "expl" + (ok ? "" : " is-bad");
+      e.innerHTML = `<span class="verdict">${ok ? "Bonne réponse." : "Pas tout à fait. La bonne réponse est en vert."}</span>${expl}`;
+      card.appendChild(e);
+    }
+    list.appendChild(card);
+  });
+}
+
+function stats() {
+  const vis = visible();
+  const done = vis.filter(i => state[i] !== undefined);
+  const ok = done.filter(i => state[i] === Q[i][3]).length;
+  document.getElementById("s-total").textContent = vis.length;
+  document.getElementById("s-done").textContent = done.length;
+  document.getElementById("s-ok").textContent = ok;
+  document.getElementById("s-bad").textContent = done.length - ok;
+  document.getElementById("s-pct").textContent = done.length ? Math.round(100 * ok / done.length) + " %" : "–";
+  document.getElementById("prog").style.width = (vis.length ? 100 * done.length / vis.length : 0) + "%";
+
+  const all = Object.keys(state).map(Number);
+  const rows = CH.map((name, c) => {
+    const qs = Q.map((q, i) => i).filter(i => Q[i][0] === c);
+    const d = qs.filter(i => state[i] !== undefined), g = d.filter(i => state[i] === Q[i][3]).length;
+    return `<span>${name.padEnd(30, " ")} ${g}/${qs.length}${d.length < qs.length ? " (en cours)" : ""}</span>`;
+  });
+  document.getElementById("end-chapters").innerHTML = all.length ? rows.join("") : "";
+  const totOk = all.filter(i => state[i] === Q[i][3]).length;
+  const t = document.getElementById("end-text");
+  if (!all.length) t.textContent = "Réponds aux questions pour voir ton bilan par chapitre.";
+  else if (all.length < Q.length) t.textContent = `${totOk} bonnes réponses sur ${all.length} questions répondues. Il en reste ${Q.length - all.length}.`;
+  else t.textContent = totOk >= 32 ? `${totOk}/${Q.length} : tu maîtrises le projet, tu es prêt pour l'entretien.` : totOk >= 24 ? `${totOk}/${Q.length} : bonne base. Relis les explications de tes erreurs puis refais-les.` : `${totOk}/${Q.length} : relis le notebook chapitre par chapitre, puis refais tes erreurs.`;
+  document.getElementById("retry-wrong").disabled = !all.some(i => state[i] !== Q[i][3]);
+}
+
+function buildFilters() {
+  const f = document.getElementById("filters"); f.innerHTML = "";
+  [["Tout", -1], ...CH.map((c, i) => [c, i])].forEach(([label, v]) => {
+    const b = document.createElement("button"); b.type = "button"; b.className = "chip"; b.textContent = label;
+    b.setAttribute("aria-pressed", String(filter === v && !only));
+    b.addEventListener("click", () => { filter = v; only = null; buildFilters(); render(); stats(); });
+    f.appendChild(b);
+  });
+  if (only) { const b = document.createElement("button"); b.type = "button"; b.className = "chip"; b.textContent = "Mes erreurs"; b.setAttribute("aria-pressed", "true"); f.appendChild(b); }
+}
+
+document.getElementById("reset").addEventListener("click", () => { state = {}; only = null; filter = -1; persist(); buildFilters(); render(); stats(); window.scrollTo({ top: 0 }); });
+document.getElementById("retry-wrong").addEventListener("click", () => {
+  const wrong = Object.keys(state).map(Number).filter(i => state[i] !== Q[i][3]);
+  if (!wrong.length) return;
+  wrong.forEach(i => delete state[i]); only = new Set(wrong); filter = -1; persist(); buildFilters(); render(); stats(); window.scrollTo({ top: 0 });
+});
+
+// Petit signal décoratif : bruit + chocs amortis périodiques, comme un roulement défectueux
+(function () {
+  let d = "M0 23"; let seed = 7; const rnd = () => (seed = (seed * 9301 + 49297) % 233280) / 233280;
+  for (let x = 1; x <= 760; x++) {
+    const ph = x % 95; const imp = ph < 40 ? Math.exp(-ph / 7) * Math.sin(ph * 1.9) * 18 : 0;
+    d += ` L${x} ${(23 - imp - (rnd() - .5) * 4).toFixed(1)}`;
+  }
+  document.getElementById("wave").setAttribute("d", d);
+})();
+
+buildFilters(); render(); stats();
+</script>
+
+</body></html>
