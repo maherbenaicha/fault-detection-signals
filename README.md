@@ -34,11 +34,11 @@ Signal brut (12 kHz)
 
 | Modèle | Entrée | Accuracy | F1 macro |
 |---|---|---|---|
-| Random Forest | 23 descripteurs | XX | XX |
-| SVM (RBF) | 23 descripteurs | XX | XX |
-| 1D-CNN | signal brut | XX | XX |
-| CNN-LSTM | signal brut | XX | XX |
-| Autoencodeur (Normal vs Défaut) | signal brut, non supervisé | XX | XX |
+| Random Forest | 23 descripteurs | 1.0000 | 1.0000 |
+| SVM (RBF) | 23 descripteurs | 1.0000 | 1.0000 |
+| 1D-CNN | signal brut | 1.0000 | 1.0000 |
+| CNN-LSTM | signal brut | 0.8239 | 0.8534 |
+| Autoencodeur (Normal vs Défaut) | signal brut, non supervisé | 1.0000 | 1.0000 |
 
 *(Remplacer XX par les valeurs du tableau final du notebook.)*
 
